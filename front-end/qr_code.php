@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 include_once("../vendor/autoload.php");
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -33,7 +35,6 @@ function getUsernameFromEmail($email) {
     return $username;
 }
 // Save it to a file
-session_start();
 $filename = getUsernameFromEmail($_SESSION["email"]);
 $result->saveToFile(__DIR__.'/qr_file/'.$filename.'.png');
 
