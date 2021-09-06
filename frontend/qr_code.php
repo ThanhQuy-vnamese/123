@@ -9,18 +9,18 @@ use Endroid\QrCode\Label\Alignment\LabelAlignmentCenter;
 use Endroid\QrCode\Label\Font\NotoSans;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
-
+$token = $_SESSION["token"];
 $result = Builder::create()
     ->writer(new PngWriter())
     ->writerOptions([])
-    ->data('http://localhost:81/php/front-end/qr.php')
+    ->data("http://localhost:81/test/frontend/qr.php?token=$token")
     ->encoding(new Encoding('UTF-8'))
     ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
     ->size(300)
     ->margin(10)
     ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
 //    ->logoPath(__DIR__.'/assets/symfony.png')
-    ->labelText('Your QR')
+    ->labelText('Download Your QR')
     ->labelFont(new NotoSans(20))
     ->labelAlignment(new LabelAlignmentCenter())
     ->build();

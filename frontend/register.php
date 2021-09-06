@@ -1,7 +1,7 @@
 <?php
-include("../back-end/connect.php");
+include("../backend/connect.php");
 $database= new Database();
-include("../back-end/login.php");
+include("../backend/login.php");
 $user=new User();
 
 ?>
@@ -229,63 +229,17 @@ $user=new User();
                         <div class="row px-3 mb-4">
                             <div class="custom-control custom-checkbox custom-control-inline"> <input id="chk1" type="checkbox" name="chk" class="custom-control-input"> <label for="chk1" class="custom-control-label text-sm">Remember me</label> </div> <a href="#" class="ml-auto mb-0 text-sm">Forgot Password?</a>
                         </div>
-                        <div class="row mb-3 px-3"> <button type="submit" name="submit" class="btn btn-blue text-center">Login</button> </div>
-                        <div class="row mb-4 px-3"> <small class="font-weight-bold">Don't have an account? <a class="text-danger ">Register</a></small> </div>
+                        <div class="row mb-3 px-3"> <button type="submit" name="submit" class="btn btn-blue text-center">Register</button> </div>
+                        <div class="row mb-4 px-3"> <small class="font-weight-bold">Have an account? <a class="text-warning" href="login.php">Login</a></small> </div>
                     </form>
                     <button id="btnGetResource">Get current timestamp</button>
                     <?php
-                        if(isset($_REQUEST["submit"])){
-                            $email=$_REQUEST["email"];
-                            $password=$_REQUEST["password"];
-                            $user->login($email, $password);
-                        }
+                    if(isset($_REQUEST["submit"])){
+                        $email=$_REQUEST["email"];
+                        $pass=$_REQUEST["password"];
+                        $user->register($email, $pass);
+                    }
                     ?>
-                    <script>
-                        const store = {};
-                        const loginButton = document.querySelector('#frmLogin');
-                        const btnGetResource = document.querySelector('#btnGetResource');
-                        const form = document.forms[0];
-
-                        // Inserts the jwt to the store object
-                        store.setJWT = function (data) {
-                            this.JWT = data;
-                        };
-
-                        loginButton.addEventListener('submit', async (e) => {
-                            e.preventDefault();
-
-                            const res = await fetch('../back-end/authenticate.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                                },
-                                body: JSON.stringify({
-                                    username: <?php $_SESSION['email']?>,
-                                    password: <?php $_SESSION['password']?>
-                                })
-                            });
-
-                            if (res.status >= 200 && res.status <= 299) {
-                                const jwt = await res.text();
-                                store.setJWT(jwt);
-                                frmLogin.style.display = 'none';
-                                btnGetResource.style.display = 'block';
-                            } else {
-                                // Handle errors
-                                console.log(res.status, res.statusText);
-                            }
-                        });
-
-                        btnGetResource.addEventListener('click', async (e) => {
-                            const res = await fetch('../back-end/resource.php', {
-                                headers: {
-                                    'Authorization': `Bearer ${store.JWT}`
-                                }
-                            });
-                            const timeStamp = await res.text();
-                            console.log(timeStamp);
-                        });
-                    </script>
                 </div>
             </div>
         </div>

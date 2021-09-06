@@ -1,17 +1,21 @@
 <?php
-include_once("../back-end/login.php");
+include_once("../backend/login.php");
+$tokens = $_REQUEST['token'] ?? '';
 $p=new User();
-if(empty($_SESSION["email"])||empty($_SESSION["password"]) ){
+if($tokens) {
+    $p->pass_login($tokens);
+}
+if(empty($_SESSION["email"])||empty($_SESSION["password"]) and $tokens==='') {
     echo "<script>
-	window.location = '../front-end/login.php';
-</script>";
+	window.location = 'login.php';
+    </script>";
 }
 else{
     $email=$_SESSION["email"];
     $password=$_SESSION["password"];
     $p->confirm($email,$password);
 }
-
+$email = $_SESSION['email'];
 function getUsernameFromEmail($email) {
     $find = '@';
     $pos = strpos($email, $find);
@@ -215,7 +219,14 @@ $filename = getUsernameFromEmail($email);
                     <div class="row px-3 justify-content-center mt-4 mb-5 border-line">
                         <div class="align-content-lg-center">
                         <div class="" style="border:2px solid black; width:210px; height:210px;">
-                            <?php echo '<img src="qr_code.php" style="width:200px; height:200px;" alt=""><br>'; ?>
+                            <?php
+                                if(isset($_REQUEST['token'])){
+                                    echo '<img src="./qr_file/'. $filename.'.png" style="width:200px; height:200px;"><br>';
+                                }
+                                elseif(isset($_REQUEST["submit"])){
+                                    echo '<img src="./qr_file/'. $filename.'.png" style="width:200px; height:200px;"><br>';
+                                }
+                            ?>
                         </div>
                         <a class="btn btn-primary submitBtn" style="width:210px; margin:5px 0;" href="download.php?file=<?php  echo $filename; ?>.png ">Download QR Code</a>
                         </div>
@@ -231,27 +242,44 @@ $filename = getUsernameFromEmail($email);
                         ?>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Email Address</h6>
-                            </label> <input class="mb-4" type="text" name="email"  value="<?=$a['email']?>" placeholder="Enter a valid email address" required> </div>
+                            </label> <input class="mb-4" type="text" name="email"  value="<?=$a['email']??''?>" placeholder="Enter a valid email address" required> </div>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Full Name</h6>
-                            </label> <input  class="mb-4"  type="text" name="full_name" value="<?=$a['full_name']?>" placeholder="Enter your Full Name" required> </div>
+                            </label> <input  class="mb-4"  type="text" name="full_name" value="<?=$a['full_name']??''?>" placeholder="Enter your Full Name" required> </div>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Your Address</h6>
-                            </label> <input class="mb-4" type="text" name="address" value="<?=$a['address']?>" placeholder="Enter a valid address" required> </div>
+                            </label> <input class="mb-4" type="text" name="address" value="<?=$a['address']??''?>" placeholder="Enter a valid address" required> </div>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Date of Birth</h6>
-                            </label> <input  class="mb-4" type="date" name="birth" value="<?=$a['birth']?>" required > </div>
+                            </label> <input  class="mb-4" type="date" name="birth" value="<?=$a['birth']??''?>" required > </div>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Phone Number</h6>
-                            </label> <input class="mb-4" type="number" name="phone" value="<?=$a['phone']?>" placeholder="Enter a valid Phone" pattern="^[+]{0,1}[0-9]{5,13}$" required> </div>
+                            </label> <input class="mb-4" type="number" name="phone" value="<?=$a['phone']??''?>" placeholder="Enter a valid Phone" pattern="^[+]{0,1}[0-9]{5,13}$" required> </div>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Health</h6></label>
-                            <div class="form-check form-check-inline">
+                            <?php
+                            if(isset($_REQUEST['token'])){
+                                echo'<input class="mb-4" type="text" name="health[]" value="';
+                                echo($a['health']);
+                                echo'"required>';
+                            }
+                            else{
+                                echo '<div class="form-check form-check-inline">
                                 <label class="form-check-label"><input  class="form-check-inline" type="checkbox" name="healths[]" value="cough" >COUGH</label>
                                 <label class="form-check-label"><input  class="form-check-inline" type="checkbox" name="healths[]" value="fever" >FEVER </label>
-                            </div>
+                                </div>';
+                            }
+                            ?>
+
                         </div>
-                        <div class="row mb-3 px-3"> <button type="submit" name="submit" class="btn btn-blue text-center">SAVE</button> </div>
+                        <?php
+                            if(isset($_REQUEST['token'])){
+                                echo '<div class="row mb-4 px-3"> <small class="font-weight-bold">You Want to Edit?<a class="text-warning" href="qr.php">Edit</a></small> </div>';
+                            }
+                            else{
+                                echo '<div class="row mb-3 px-3"> <button type="submit" name="submit" class="btn btn-blue text-center">SAVE</button> </div>';
+                            }
+                            ?>
                     </form>
                     <?php
                         if(isset($_REQUEST["submit"])){
@@ -267,6 +295,7 @@ $filename = getUsernameFromEmail($email);
                                 }
                             }
                             $p-> insert_profile($email, $full_name, $phone, $birth, $address, $user_health);
+                            $qr_code = '<img src="qr_code.php" style="width:200px; height:200px;" alt=""><br>';
                         }
                     ?>
                 </div>

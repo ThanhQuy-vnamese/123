@@ -1,9 +1,9 @@
 <?php
-include_once("../back-end/login.php");
+include_once("../backend/login.php");
 $p=new User();
 if(empty($_SESSION["email"])||empty($_SESSION["password"]) ){
     echo "<script>
-	window.location = '../front-end/login.php';
+	window.location = '/login.php';
 </script>";
 }
 else{

@@ -1,20 +1,7 @@
 <?php
-include("../back-end/connect.php");
+include("../backend/connect.php");
 $database= new Database();
 $database ->connect_database();
-
-include_once("../back-end/login.php");
-$p=new User();
-if(empty($_SESSION["email"])||empty($_SESSION["password"]) ){
-    echo "<script>
-	window.location = '../front-end/login.php';
-</script>";
-}
-else{
-    $email=$_SESSION["email"];
-    $password=$_SESSION["password"];
-    $p->confirm($email,$password);
-}
 ?>
 <!doctype html>
 <html lang="en">
