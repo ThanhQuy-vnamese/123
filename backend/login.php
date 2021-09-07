@@ -2,6 +2,10 @@
 session_start();
 require_once("connect.php");
 use App\Backend\Token;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 require_once '../vendor/autoload.php';
 class User extends Database
 {
@@ -34,7 +38,6 @@ class User extends Database
         if($numberUser == 0)
         {
             $token = new Token();
-
             $payload = [
                 "email" => $email,
                 "password" => $pass,
@@ -43,23 +46,60 @@ class User extends Database
             $token->setPayload($payload);
             $token->setKey('abc');
             $token_regs = $token->encode();
-            $password=md5($pass);
-            $sql2="insert into account(username, email, password, token) values('$email','$email','$password','$token_regs')";
 
-            if(mysqli_query($link,$sql2))
-            {
+            if($token_regs){
+                $mail = new PHPMailer(true);
 
-                echo"<script>alert('User created');</script>";
-                $this->login($email, $pass);
-            }
-            else
-            {
-                echo"<script>alert('Register failed');</script>";
+                $mail->SMTPDebug = 3;
+                $mail->isSMTP();
+                $mail->Host = "smtp.gmail.com";
+                $mail->SMTPAuth = true;
+                $mail->Username = "tranthanhquythkg@gmail.com";
+                $mail->Password = "quy1234123";
+                $mail->SMTPSecure = "tls";
+                $mail->Port = 587;
+
+                $mail->From = "tranthanhquythkg@gmail.com";
+                $mail->FromName = "Caroline";
+                $mail->addAddress("$email", "Recepient Name");
+
+                $mail->isHTML(true);
+
+                $mail->Subject = "Active Your Account";
+                $mail->Body = "<h6>Please Click the link below to active your account</h6><br/><a href='http://localhost:81/test/frontend/register.php?token=$token_regs'>'http://localhost:81/test/frontend/register.php?token=$token_regs'</a>";
+                $mail->AltBody = "This is the plain text version of the email content";
+
+                try {
+                    if($mail->send()) {
+                        echo "Message has been sent successfully";
+                    }
+                } catch (Exception $e) {
+                    echo "Mailer Error: " . $mail->ErrorInfo;
+                }
             }
         }
         else
         {
             echo"<script>alert('Email already exists');</script>";
+        }
+    }
+
+    function active($tokens){
+        $connect = $this->connect_database();
+        $token = new Token();
+        $token->setKey('abc');
+        $payload = $token->decode($tokens);
+        $email = $payload->email;
+        $password = $payload->password;
+        $pass = md5($password);
+        $sql2 = "insert into account(username, email, password, token) values('$email','$email','$pass','$tokens')";
+
+        if (mysqli_query($connect, $sql2)) {
+
+            echo "<script>alert('Your Account have been active success!');</script>";
+            $this->login($email, $password);
+        } else {
+            echo "<script>alert('Something went wrong! Try later!');</script>";
         }
     }
     function confirm($email, $password){
@@ -89,7 +129,8 @@ class User extends Database
                 $_SESSION["token"] = $row["token"];
                 $this ->confirm($_SESSION["email"], $_SESSION["password"]);
             }
-        } else {
+        }
+        else {
             echo "<script>
                     window.location = '../frontend/login.php';
                 </script>";

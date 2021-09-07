@@ -219,6 +219,7 @@ $filename = getUsernameFromEmail($email);
                     <div class="row px-3 justify-content-center mt-4 mb-5 border-line">
                         <div class="align-content-lg-center">
                         <div class="" style="border:2px solid black; width:210px; height:210px;">
+                           <img src="qr_code.php" style="width:200px; height:200px;" hidden alt=""><br>
                             <?php
                                 if(isset($_REQUEST['token'])){
                                     echo '<img src="./qr_file/'. $filename.'.png" style="width:200px; height:200px;"><br>';
@@ -228,7 +229,7 @@ $filename = getUsernameFromEmail($email);
                                 }
                             ?>
                         </div>
-                        <a class="btn btn-primary submitBtn" style="width:210px; margin:5px 0;" href="download.php?file=<?php  echo $filename; ?>.png ">Download QR Code</a>
+                            <a class="btn btn-primary submitBtn" style="width:210px; margin:5px 0;" href="download.php?file=<?php  echo $filename; ?>.png ">Download QR Code</a>
                         </div>
                     </div>
                 </div>
@@ -242,7 +243,7 @@ $filename = getUsernameFromEmail($email);
                         ?>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Email Address</h6>
-                            </label> <input class="mb-4" type="text" name="email"  value="<?=$a['email']??''?>" placeholder="Enter a valid email address" required> </div>
+                            </label> <input class="mb-4" type="text" name="email"  value="<?=$a['email']??@$email?>" placeholder="Enter a valid email address" required> </div>
                         <div class="row px-3"> <label class="mb-1">
                                 <h6 class="mb-0 text-sm">Full Name</h6>
                             </label> <input  class="mb-4"  type="text" name="full_name" value="<?=$a['full_name']??''?>" placeholder="Enter your Full Name" required> </div>
@@ -295,7 +296,6 @@ $filename = getUsernameFromEmail($email);
                                 }
                             }
                             $p-> insert_profile($email, $full_name, $phone, $birth, $address, $user_health);
-                            $qr_code = '<img src="qr_code.php" style="width:200px; height:200px;" alt=""><br>';
                         }
                     ?>
                 </div>

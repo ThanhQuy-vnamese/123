@@ -3,7 +3,10 @@ include("../backend/connect.php");
 $database= new Database();
 include("../backend/login.php");
 $user=new User();
-
+$tokens = $_REQUEST['token'] ?? '';
+if($tokens) {
+    $user->active($tokens);
+}
 ?>
 <!doctype html>
 <html lang="en">
